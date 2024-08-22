@@ -1,27 +1,39 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
-interface IAdmin extends Document {
-    clubName: string;
-    presidentName: string;
-    type: string;
-    pastEvents: mongoose.Types.ObjectId[];
-    currentEvents: mongoose.Types.ObjectId[];
-    presidentMobileNo: string;
-    rollNo: string;
-    membersOfClub: mongoose.Types.ObjectId[];
+interface IEvent extends Document {
+    title: string;
+    subtitle: string;
+    description: string;
+    date: Date;
+    location: string;
+    time: string;
+    fees: number;
+    noOfParticipants: number;
+    coverImg: string;
+    detailImg: string;
+    supportFile: string;
+    visibility: boolean;
+    isAvailableToReg: boolean;
+    owner: mongoose.Types.ObjectId;
 }
 
-const adminSchema: Schema = new Schema<IAdmin>({
-    clubName: { type: String, required: true },
-    presidentName: { type: String, required: true },
-    type: { type: String, required: true },
-    pastEvents: { type: [Schema.Types.ObjectId], ref: 'Event' },
-    currentEvents: { type: [Schema.Types.ObjectId], ref: 'Event' },
-    presidentMobileNo: { type: String, required: true },
-    rollNo: { type: String, required: true },
-    membersOfClub: { type: [Schema.Types.ObjectId], ref: 'User' }
+const eventSchema: Schema = new Schema<IEvent>({
+    title: { type: String, required: true },
+    subtitle: { type: String, required: true },
+    description: { type: String, required: true },
+    date: { type: Date, required: true },
+    location: { type: String, required: true },
+    time: { type: String, required: true },
+    fees: { type: Number, required: true },
+    noOfParticipants: { type: Number, required: true },
+    coverImg: { type: String, required: true },
+    detailImg: { type: String, required: true },
+    supportFile: { type: String, required: true },
+    visibility: { type: Boolean, required: true },
+    isAvailableToReg: { type: Boolean, required: true },
+    owner: { type: Schema.Types.ObjectId, ref: 'Admin', required: true }
 });
 
-const Admin = mongoose.model<IAdmin>('Admin', adminSchema);
+const Event = mongoose.model<IEvent>('Event', eventSchema);
 
-export default Admin;
+export default Event;
