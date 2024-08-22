@@ -1,15 +1,27 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
-interface IEventReg extends Document {
-    eventId: mongoose.Types.ObjectId;
-    regUsers: mongoose.Types.ObjectId[];
+interface IAdmin extends Document {
+    clubName: string;
+    presidentName: string;
+    type: string;
+    pastEvents: mongoose.Types.ObjectId[];
+    currentEvents: mongoose.Types.ObjectId[];
+    presidentMobileNo: string;
+    rollNo: string;
+    membersOfClub: mongoose.Types.ObjectId[];
 }
 
-const eventRegSchema: Schema = new Schema<IEventReg>({
-    eventId: { type: Schema.Types.ObjectId, ref: 'Event', required: true },
-    regUsers: { type: [Schema.Types.ObjectId], ref: 'User', required: true }
+const adminSchema: Schema = new Schema<IAdmin>({
+    clubName: { type: String, required: true },
+    presidentName: { type: String, required: true },
+    type: { type: String, required: true },
+    pastEvents: { type: [Schema.Types.ObjectId], ref: 'Event' },
+    currentEvents: { type: [Schema.Types.ObjectId], ref: 'Event' },
+    presidentMobileNo: { type: String, required: true },
+    rollNo: { type: String, required: true },
+    membersOfClub: { type: [Schema.Types.ObjectId], ref: 'User' }
 });
 
-const EventReg = mongoose.model<IEventReg>('EventReg', eventRegSchema);
+const Admin = mongoose.model<IAdmin>('Admin', adminSchema);
 
-export default EventReg;
+export default Admin;
