@@ -23,8 +23,13 @@ import Image from "next/image";
 interface Event {
   _id: string;
   title: string;
+<<<<<<< Updated upstream
   description: string;
   subtitle: string;
+=======
+  subtitle: string;
+  description:string;
+>>>>>>> Stashed changes
   date: string;
   location: string;
   time: string;
@@ -112,6 +117,7 @@ const EventsPage: React.FC = () => {
                 </div>
               </CardHeader>
               <CardContent className="p-2 flex-grow flex flex-col justify-between">
+<<<<<<< Updated upstream
                 <CardTitle className="text-sm text-gray-800">{event.title}</CardTitle>
 
                 <CardDescription className="text-xs">{event.subtitle}</CardDescription>
@@ -136,15 +142,48 @@ const EventsPage: React.FC = () => {
                     <div className="bg-purple-500 text-white px-2 py-1 rounded-full flex items-center">
                       <UserIcon className="h-3 w-3 mr-1" />
                       <span className="text-xs">{event.noOfParticipants}</span>
+=======
+                <div>
+                  <CardTitle className="text-sm text-gray-800">{event.title}</CardTitle>
+                  <CardDescription className=" text-xs">{event.description}</CardDescription>
+                  <div className="flex justify-between items-center text-gray-600 text-xs mt-2">
+                    <div className="flex items-center">
+                      <MapPinIcon className="h-4 w-4 mr-1 text-purple-500" />
+                      {event.location}
+                    </div>
+                    <div className="flex items-center">
+                      <ClockIcon className="h-4 w-4 mr-1 text-purple-500" />
+                      {event.time}
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between items-center mt-2">
+                    <div className="flex items-center space-x-2">
+                      <div className="bg-purple-500 text-white px-2 py-1 rounded-full flex items-center">
+                        <DollarSignIcon className="h-3 w-3 mr-1" />
+                        <span className="text-xs">₹{event.fees}</span>
+                      </div>
+
+                      <div className="bg-purple-500 text-white px-2 py-1 rounded-full flex items-center">
+                        <UserIcon className="h-3 w-3 mr-1" />
+                        <span className="text-xs">{event.noOfParticipants}</span>
+                      </div>
+>>>>>>> Stashed changes
                     </div>
                   </div>
                 </div>
 
                 {event.isAvailableToReg && (
                   <Button className="mt-3 w-full flex justify-center items-center text-white bg-black hover:bg-purple-700">
+<<<<<<< Updated upstream
                   Register Now
                   <ArrowRightIcon className="ml-2 h-4 w-4 transition-transform duration-300 transform hover:translate-x-1" />
                 </Button>
+=======
+                    Register Now
+                    <ArrowRightIcon className="ml-2 h-4 w-4 transition-transform duration-300 transform hover:translate-x-1" />
+                  </Button>
+>>>>>>> Stashed changes
                 )}
               </CardContent>
             </Card>
