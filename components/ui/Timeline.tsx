@@ -42,4 +42,5 @@ const TimelineItem: React.FC<TimelineItemProps> = ({ date, title, description, s
   </div>
 );
 
+
 export { Timeline, TimelineItem };
