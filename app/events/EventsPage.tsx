@@ -41,7 +41,7 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
     <Card className="overflow-hidden">
       <CardContent className="p-0 relative">
         <Image
-          src={"/imgs/garba.jpg"}
+          src={event.coverImg}
           alt={event.title}
           width={400}
           height={200}
