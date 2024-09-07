@@ -204,7 +204,7 @@ const EventPage: React.FC = () => {
           <div className="flex items-center space-x-4">
             <Button variant="outline" size="sm" className="flex items-center">
               <StarIcon className="h-4 w-4 mr-1" />
-              I'm Interested
+              I am Interested
             </Button>
             <Button variant="outline" size="sm" className="flex items-center">
               <ShareIcon className="h-4 w-4 mr-1" />

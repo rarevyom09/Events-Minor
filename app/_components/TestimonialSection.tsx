@@ -14,7 +14,7 @@ const TestimonialSection = () => {
         <div className="space-y-4">
           {testimonials.map(testimonial => (
             <div key={testimonial.id} className="border p-4 rounded-lg shadow-sm bg-white">
-              <p className="italic">"{testimonial.feedback}"</p>
+              <p className="italic">{testimonial.feedback}</p>
               <p className="mt-2 text-right font-semibold">{testimonial.name}</p>
             </div>
           ))}
