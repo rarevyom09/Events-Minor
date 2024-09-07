@@ -124,7 +124,7 @@ const EventsPage: React.FC = () => {
           setError("Failed to load events");
         }
       } catch (err) {
-        setError(err.message);
+        setError((err as Error).message);
       } finally {
         setLoading(false);
       }

@@ -1,9 +1,9 @@
-import { NextResponse } from 'next/server';
+import { NextResponse,NextRequest } from 'next/server';
 
 import { connectToDB } from '@/lib/connectToDB';
 import Event from '@/models/eventSchema';
 
-export async function POST(req) {
+export async function POST(req:NextRequest) {
     await connectToDB();
 
     try {
@@ -12,11 +12,11 @@ export async function POST(req) {
         await event.save();
         return NextResponse.json({ success: true, data: event }, { status: 201 });
     } catch (error) {
-        return NextResponse.json({ success: false, error: error.message }, { status: 400 });
+        return NextResponse.json({ success: false, error: (error as Error).message }, { status: 400 });
     }
 }
 
-export async function GET(req) {
+export async function GET(req:NextRequest) {
     await connectToDB();
 
     try {
@@ -24,6 +24,6 @@ export async function GET(req) {
         // console.log(events);
         return NextResponse.json({ success: true, data: events }, { status: 200 });
     } catch (error) {
-        return NextResponse.json({ success: false, error: error.message }, { status: 400 });
+        return NextResponse.json({ success: false, error: (error as Error).message }, { status: 400 });
     }
 }

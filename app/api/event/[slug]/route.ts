@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextResponse,NextRequest } from "next/server";
 import { connectToDB } from "@/lib/connectToDB";
 import Event from "@/models/eventSchema";
 
-export async function GET(req) {
+export async function GET(req:NextRequest) {
   await connectToDB();
   const { pathname } = new URL(req.url);
   console.log("pathname: ", pathname);
@@ -16,7 +16,7 @@ export async function GET(req) {
     );
   } catch (error) {
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: (error as Error).message },
       { status: 400 }
     );
   }
