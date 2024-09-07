@@ -4,10 +4,10 @@ import EventsPage from './EventsPage'
 const page = () => {
   return (
     <div>
-      {/* from event */}
+      from event
       <EventsPage/>
     </div>
   )
 }
 
-export default page
+export default page;
