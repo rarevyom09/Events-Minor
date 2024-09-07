@@ -17,6 +17,7 @@ import {
   ArrowLeftIcon,
   CheckIcon,
   CopyIcon,
+  XIcon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -30,6 +31,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetClose } from "@/components/ui/sheet"
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -66,7 +68,7 @@ const event: Event = {
   time: "7:00 PM Onwards",
   fees: 200,
   noOfParticipants: 1500,
-  coverImg: "/imgs/garba.jpg",
+  coverImg: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   detailImg: "/imgs/img5.jpg",
   supportFile: "https://example.com/files/rules_and_guidelines.pdf",
   visibility: true,
@@ -144,6 +146,7 @@ const ShareCard: React.FC<{ event: Event }> = ({ event }) => {
 
 const EventPage: React.FC = () => {
   const [showTicketBanner, setShowTicketBanner] = useState(false);
+  const [isDrawerOpen,setIsDrawerOpen] = useState(false);
   const coverImageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -158,6 +161,14 @@ const EventPage: React.FC = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleRegister = () => {
+    setIsDrawerOpen(true);
+  }
+
+  const handleCloseDrawer = () => {
+    setIsDrawerOpen(false);
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -199,7 +210,7 @@ const EventPage: React.FC = () => {
               <ShareIcon className="h-4 w-4 mr-1" />
               Share
             </Button>
-            <Button className="bg-black hover:bg-purple-800 text-white">
+            <Button className="bg-black hover:bg-purple-800 text-white" onClick={handleRegister}>
               Register Now
             </Button>
           </div>
@@ -220,7 +231,7 @@ const EventPage: React.FC = () => {
           <Button
             variant="ghost"
             size="sm"
-            className="absolute top-4 left-4 bg-white/50 hover:bg-white/75 text-black"
+            className="absolute top-4 left-4 bg-white/85 hover:bg-white/100 text-black"
           >
             <ArrowLeftIcon className="h-5 w-5 mr-2" />
             Back to Events
@@ -362,7 +373,7 @@ const EventPage: React.FC = () => {
                   <span>Registration Fee</span>
                   <span className="font-bold">₹{event.fees}</span>
                 </div>
-                <Button className="w-full bg-purple-500 hover:bg-purple-700">
+                <Button className="w-full bg-purple-500 hover:bg-purple-700" onClick={handleRegister}>
                   Register Now
                 </Button>
                 <div className="text-center text-sm text-gray-500">
@@ -432,6 +443,40 @@ const EventPage: React.FC = () => {
               Favorite
             </Button>
           </div>
+
+          {/* Drawer for Fancy Ticket Booking */}
+          <Sheet open={isDrawerOpen} onOpenChange={handleCloseDrawer}>
+            <SheetContent className="bg-white p-8 rounded-t-3xl items-center" side="bottom">
+              <SheetHeader className="flex items-center justify-between">
+                <SheetTitle className='mx-auto'>Your Ticket Details</SheetTitle>
+                  <SheetClose onClick={handleCloseDrawer} className="cursor-pointer"/>
+              </SheetHeader>
+              <div className="flex flex-col items-center p-2">
+                <div className="flex items-center gap-4 mb-4 bg-white text-black p-6 rounded-lg border-[1px] border-black w-full text-center">
+                  <div>
+                    <Image
+                      src={event.coverImg}
+                      height={200}
+                      width={250}
+                      alt='cover img'
+                      className="rounded-lg"
+                    />
+                  </div>
+                  <div className='text-justify'>
+                    <h2 className="text-2xl font-bold mb-2">Nirma University Garba Mahotsav</h2>
+                    <p>Garba Night | 15th October 2024 | 7:00 PM</p>
+                    <p>Dome Ground, Nirma University</p>
+                    <p className="mt-4">Ticket Price: ₹{event.fees}</p>
+                  </div>
+                </div>
+                <Button
+                  className="bg-purple-500 hover:bg-purple-800 w-full text-white py-3 text-lg"
+                >
+                  Bang On !!
+                </Button>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
     </div>
