@@ -1,14 +1,30 @@
-"use client"
+"use client";
 
 import React, { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { CalendarIcon, MapPinIcon, ClockIcon, DollarSignIcon, UserIcon, PlusCircleIcon } from "lucide-react";
-import Image from "next/image";
+import { Input } from "@/components/ui/input";
+import {
+  CalendarIcon,
+  MapPinIcon,
+  ClockIcon,
+  DollarSignIcon,
+  UserIcon,
+  PlusCircle,
+  Radio,
+  Clock,
+  ListMusic,
+  Music,
+  User,
+  BarChart2,
+  Search,
+  Home,
+} from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 interface Event {
   _id: string;
@@ -74,24 +90,23 @@ const EventCard: React.FC<{ event: Event }> = ({ event }) => {
               <AvatarImage src="https://github.com/shadcn.png" alt={event.clubName} />
               <AvatarFallback>{event.clubName}</AvatarFallback>
             </Avatar>
-            <span className="text-sm font-medium">{event.clubName || "Rare Society of Cultural Events"}</span>
+            <span className="text-sm font-medium">Rare Society of Cultural Events</span>
           </div>
-          <Badge variant="secondary">{event.eventType}</Badge>
         </div>
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            <span className="flex items-center text-sm text-black">
-              <DollarSignIcon className="w-4 h-4 mr-1 text-purple-500" />
+            <span className="flex items-center text-sm text-muted-foreground">
+              <DollarSignIcon className="w-4 h-4 mr-1" />
               ₹{event.fees}
             </span>
-            <span className="flex items-center text-sm text-black">
-              <UserIcon className="w-4 h-4 mr-1 text-purple-500" />
+            <span className="flex items-center text-sm text-muted-foreground">
+              <UserIcon className="w-4 h-4 mr-1" />
               {event.noOfParticipants}
             </span>
           </div>
           {event.isAvailableToReg ? (
             <Link href={`/events/${event._id}`}>
-              <Button variant="outline" size="sm" className=" text-white bg-purple-500 hover:text-white hover:bg-purple-700">
+              <Button variant="outline" size="sm">
                 Book Now
               </Button>
             </Link>
@@ -111,6 +126,7 @@ const EventsPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("Popular");
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -133,54 +149,135 @@ const EventsPage: React.FC = () => {
     fetchEvents();
   }, []);
 
+  const filteredEvents = events.filter(
+    (event) =>
+      event.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <Skeleton className="h-12 w-1/2 mb-8" />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(6)].map((_, index) => (
-            <Skeleton key={index} className="h-64 w-full rounded-lg" />
-          ))}
-        </div>
-      </div>
-    );
+    return <div className="flex justify-center items-center h-screen">Loading...</div>;
   }
 
   if (error) {
-    return <div className="container mx-auto px-4 py-8 text-center text-red-500">{error}</div>;
+    return (
+      <div className="flex justify-center items-center h-screen text-red-500">{error}</div>
+    );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8 text-center">College Events near You</h1>
-      <div className="mb-8 overflow-x-auto flex justify-between">
-        {/* categories menu */}
-        <div className="flex space-x-2 pb-2">
-          {clubCategories.map((category) => (
-            <Button
-            key={category}
-            variant={selectedCategory === category ? "default" : "outline"}
-            onClick={() => setSelectedCategory(category)}
-            className="whitespace-nowrap"
-            >
-              {category}
-            </Button>
-          ))}
+    <div className="flex h-screen bg-background">
+      {/* Sidebar */}
+      <div
+        className="w-64 border-r p-4 overflow-y-auto"
+        style={{ height: "calc(100vh - 16px)" }}
+      >
+        <h2 className="text-xl font-semibold mb-4">College Events</h2>
+        <div className="space-y-4">
+          <div>
+            <h3 className="font-medium mb-2">Discover</h3>
+            <ul className="space-y-2">
+              <li>
+                <Button variant="ghost" className="w-full justify-start">
+                  <Clock className="mr-2 h-4 w-4" /> Upcoming Events
+                </Button>
+              </li>
+              <li>
+                <Button variant="ghost" className="w-full justify-start">
+                  <BarChart2 className="mr-2 h-4 w-4" /> Browse
+                </Button>
+              </li>
+              <li>
+                <Button variant="ghost" className="w-full justify-start">
+                  <Radio className="mr-2 h-4 w-4" /> Live Events
+                </Button>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="font-medium mb-2">My Events</h3>
+            <ul className="space-y-2">
+              <li>
+                <Button variant="ghost" className="w-full justify-start">
+                  <ListMusic className="mr-2 h-4 w-4" /> Registered
+                </Button>
+              </li>
+              <li>
+                <Button variant="ghost" className="w-full justify-start">
+                  <Music className="mr-2 h-4 w-4" /> Favorites
+                </Button>
+              </li>
+              <li>
+                <Button variant="ghost" className="w-full justify-start">
+                  <User className="mr-2 h-4 w-4" /> My Club Events
+                </Button>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="font-medium mb-2">Categories</h3>
+            <ul className="space-y-2">
+              {clubCategories.map((category) => (
+                <li key={category}>
+                  <Button
+                    variant={selectedCategory === category ? "default" : "ghost"}
+                    className="w-full justify-start"
+                    onClick={() => setSelectedCategory(category)}
+                  >
+                    {category}
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
-
-        {/* create event btn */}
-        <Link href='/create'>
-          <Button className=" flex justify-between items-center gap-2">
-            <PlusCircleIcon size={18} className=""/>
-            Create Event
-          </Button>
-        </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {events.map((event) => (
-          <EventCard key={event._id} event={event} />
-        ))}
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="p-6 space-y-6">
+          <div className="flex justify-between items-center">
+            <Tabs defaultValue="events">
+              <TabsList>
+                <TabsTrigger value="events">Events</TabsTrigger>
+                <TabsTrigger value="clubs">Clubs</TabsTrigger>
+                <TabsTrigger value="calendar">Calendar</TabsTrigger>
+              </TabsList>
+            </Tabs>
+            <div className="flex items-center space-x-2">
+              <div className="relative">
+                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <Input
+                  className="pl-8"
+                  type="text"
+                  placeholder="Search events"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              <Link href={'/'}>
+                <Button variant="outline">
+                  <Home className="mr-2 h-4 w-4" />Home
+                </Button>
+              </Link>
+              <Link href={'/create'}>
+                <Button>
+                  <PlusCircle className="mr-2 h-4 w-4" />Create Event
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        <div className=" flex ml-5 text-3xl font-semibold">
+          {selectedCategory}
+        </div>
+        <ScrollArea className="flex px-4 space-y-2 pb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredEvents.map((event) => (
+              <EventCard key={event._id} event={event} />
+            ))}
+          </div>
+        </ScrollArea>
       </div>
     </div>
   );
