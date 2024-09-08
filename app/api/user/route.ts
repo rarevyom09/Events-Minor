@@ -1,9 +1,9 @@
-import { NextResponse } from 'next/server';
+import { NextResponse,NextRequest } from 'next/server';
 
 import { connectToDB } from '@/lib/connectToDB';
 import User from '@/models/userSchema';
 
-export async function POST(req) {
+export async function POST(req:NextRequest) {
     await connectToDB();
 
     try {
@@ -12,11 +12,11 @@ export async function POST(req) {
         await user.save();
         return NextResponse.json({ success: true, data: user }, { status: 201 });
     } catch (error) {
-        return NextResponse.json({ success: false, error: error.message }, { status: 400 });
+        return NextResponse.json({ success: false, error: (error as Error).message }, { status: 400 });
     }
 }
 
-export async function GET(req) {
+export async function GET(req:NextRequest) {
     await connectToDB();
 
     try {
@@ -24,6 +24,6 @@ export async function GET(req) {
         console.log(users);
         return NextResponse.json({ success: true, data: users }, { status: 200 });
     } catch (error) {
-        return NextResponse.json({ success: false, error: error.message }, { status: 400 });
+        return NextResponse.json({ success: false, error: (error as Error).message }, { status: 400 });
     }
 }
