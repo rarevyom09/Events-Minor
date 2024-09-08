@@ -171,7 +171,13 @@ const EventsPage: React.FC = () => {
         className="w-64 border-r p-4 overflow-y-auto"
         style={{ height: "calc(100vh - 16px)" }}
       >
-        <h2 className="text-xl font-semibold mb-4">College Events</h2>
+        <div className='logo flex items-center justify-center'>
+          <span className=' border-[1px] rounded-md border-purple-500 p-1 bg-purple-200'>
+            <span className='font-light text-sm'>Atomi</span>
+            <span className='font-bold text-sm'>City</span>
+          </span>
+        </div>
+        <hr className=" my-2"/>
         <div className="space-y-4">
           <div>
             <h3 className="font-medium mb-2">Discover</h3>
