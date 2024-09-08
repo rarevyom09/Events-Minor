@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { CalendarIcon, MapPinIcon, ClockIcon, DollarSignIcon, UserIcon } from "lucide-react";
+import { CalendarIcon, MapPinIcon, ClockIcon, DollarSignIcon, UserIcon, PlusCircleIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -152,21 +152,29 @@ const EventsPage: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8 text-center">College Events in Gandhinagar</h1>
-      
-      <div className="mb-8 overflow-x-auto">
+      <h1 className="text-3xl font-bold mb-8 text-center">College Events near You</h1>
+      <div className="mb-8 overflow-x-auto flex justify-between">
+        {/* categories menu */}
         <div className="flex space-x-2 pb-2">
           {clubCategories.map((category) => (
             <Button
-              key={category}
-              variant={selectedCategory === category ? "default" : "outline"}
-              onClick={() => setSelectedCategory(category)}
-              className="whitespace-nowrap"
+            key={category}
+            variant={selectedCategory === category ? "default" : "outline"}
+            onClick={() => setSelectedCategory(category)}
+            className="whitespace-nowrap"
             >
               {category}
             </Button>
           ))}
         </div>
+
+        {/* create event btn */}
+        <Link href='/create'>
+          <Button className=" flex justify-between items-center gap-2">
+            <PlusCircleIcon size={18} className=""/>
+            Create Event
+          </Button>
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
