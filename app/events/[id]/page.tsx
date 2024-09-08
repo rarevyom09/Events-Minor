@@ -85,7 +85,7 @@ const event: Event = {
 
 const ShareCard: React.FC<{ event: Event }> = ({ event }) => {
   const [copied, setCopied] = useState(false);
-  const eventUrl = `http://localhost:3000/events/${event._id}`;
+  const eventUrl = `https://atomicity.vercel.app/events/${event._id}`;
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(eventUrl).then(() => {
