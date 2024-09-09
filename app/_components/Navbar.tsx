@@ -1,36 +1,67 @@
-import React from 'react'
-import { Button } from '@/components/ui/button'
-import Link from 'next/link'
+import React from "react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import {
+  ClerkProvider,
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from "@clerk/nextjs";
 
 const Navbar = () => {
   return (
-    <div className=' flex p-2 justify-between bg-purple-200 items-center'>
-      <div className='logo'>
-        <span className=' border-[1px] rounded-md border-purple-500 p-1 bg-purple-200'>
-          <span className='font-light text-lg'>Atomi</span>
-          <span className='font-bold text-lg'>City</span>
+    <div className=" flex p-2 justify-between bg-purple-200 items-center">
+      <div className="logo">
+        <span className=" border-[1px] rounded-md border-purple-500 p-1 bg-purple-200">
+          <span className="font-light text-lg">Atomi</span>
+          <span className="font-bold text-lg">City</span>
         </span>
       </div>
 
-      <div className='menu-item'>
+      <div className="menu-item">
         <nav className="hidden md:flex items-center space-x-4">
-          <Link href="#" className="hover:border-b-2 hover:border-purple-500" prefetch={false}>
+          <Link
+            href="#"
+            className="hover:border-b-2 hover:border-purple-500"
+            prefetch={false}
+          >
             Events
           </Link>
-          <Link href="#" className="hover:border-b-2 hover:border-purple-500" prefetch={false}>
+          <Link
+            href="#"
+            className="hover:border-b-2 hover:border-purple-500"
+            prefetch={false}
+          >
             Pricing
           </Link>
-          <Link href="#" className="hover:border-b-2 hover:border-purple-500" prefetch={false}>
+          <Link
+            href="#"
+            className="hover:border-b-2 hover:border-purple-500"
+            prefetch={false}
+          >
             About
           </Link>
-          <Link href="#" className="hover:border-b-2 hover:border-purple-500" prefetch={false}>
+          <Link
+            href="#"
+            className="hover:border-b-2 hover:border-purple-500"
+            prefetch={false}
+          >
             Contact
           </Link>
         </nav>
       </div>
 
-      <div className='auth-btns flex gap-x-3'>
-        <Link href={'/sign-in'}>
+      <div className="auth-btns flex gap-x-3">
+        <SignedOut>
+          <SignInButton />
+          <SignUpButton />
+        </SignedOut>
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
+        {/* <Link href={'/sign-in'}>
           <button
             className='block w-full border border-black rounded-lg px-3 py-2 text-sm font-medium transition focus:outline-none hover:border-purple-500 hover:text-purple-800'
             type='button'
@@ -45,11 +76,10 @@ const Navbar = () => {
           >
             SignUp
           </button>
-        </Link>
-            
+        </Link> */}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;
