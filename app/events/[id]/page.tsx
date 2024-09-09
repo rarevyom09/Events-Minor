@@ -194,7 +194,7 @@ const EventPage: React.FC = () => {
     setIsDrawerOpen(false);
   };
 
-  const handleEventRegister = async (string: curEventId) => {
+  const handleEventRegister = async (curEventId: string) => {
     // Register event logic here
     if (!user) {
       console.log("Please log in first to register for the event.");
