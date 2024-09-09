@@ -250,9 +250,7 @@ const EventPage: React.FC = () => {
           // setEventData(data.data[0]);
           const fetchedEventData = data.data[0];
           Object.keys(fetchedEventData).forEach((key) => {
-            if (key != "coverImg" && key != "detailImg") {
-              event[key] = fetchedEventData[key];
-            }
+            event[key] = fetchedEventData[key];
           });
         } else {
           setError("Failed to load events");
