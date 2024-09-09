@@ -56,6 +56,7 @@ import { useUser } from '@clerk/clerk-react'
 
 
 interface Event {
+    [key: string]: any;
   _id: string;
   title: string;
   subtitle: string;
@@ -257,7 +258,7 @@ const EventPage: React.FC = () => {
           setError("Failed to load events");
         }
       } catch (err) {
-        setError(err.message);
+        setError((err as Error).message);
       } finally {
         setLoading(false);
       }
