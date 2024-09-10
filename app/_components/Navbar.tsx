@@ -54,17 +54,22 @@ const Navbar = () => {
       </div>
 
       <div className="auth-btns flex gap-x-3">
+
+
         <SignedOut>
           <Button>
-            <SignInButton mode="modal"/>
+            <SignInButton mode="modal" />
           </Button>
           <Button variant="outline">
-            <SignUpButton mode="modal"/>
+            <SignUpButton mode="modal" />
           </Button>
         </SignedOut>
         <SignedIn>
           <UserButton />
         </SignedIn>
+
+
+        
         {/* <Link href={'/sign-in'}>
           <button
             className='block w-full border border-black rounded-lg px-3 py-2 text-sm font-medium transition focus:outline-none hover:border-purple-500 hover:text-purple-800'
