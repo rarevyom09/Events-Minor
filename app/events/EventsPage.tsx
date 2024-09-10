@@ -8,6 +8,24 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuIndicator,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  NavigationMenuViewport,
+} from "@/components/ui/navigation-menu"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
   CalendarIcon,
   MapPinIcon,
   ClockIcon,
@@ -22,9 +40,16 @@ import {
   BarChart2,
   Search,
   Home,
+  LayoutDashboard,
+  Settings,
+  LogOut,
+  LogIn,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { SignInButton, SignOutButton, UserButton,useUser} from "@clerk/nextjs";
+
+
 
 interface Event {
   _id: string;
@@ -127,6 +152,8 @@ const EventsPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("Popular");
   const [searchTerm, setSearchTerm] = useState<string>("");
+  // const User_from_Clerk = useUser();
+  const { isSignedIn, user } = useUser();
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -164,6 +191,59 @@ const EventsPage: React.FC = () => {
     );
   }
 
+
+  const UserMenu = () => {
+    if (!isSignedIn) {
+      return (
+        <SignInButton mode="modal" fallbackRedirectUrl={"/events"}>
+          <Button variant="ghost" className=" text-purple-500">
+            <LogIn className="mr-2 h-4 w-4" />
+            Sign In
+          </Button>
+        </SignInButton>
+      );
+    }
+
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="h-8 w-8 rounded-full">
+            <Avatar className="h-8 w-8">
+              <AvatarImage src={user?.imageUrl}/>
+              <AvatarFallback>{user?.firstName?.charAt(0)}</AvatarFallback>
+            </Avatar>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56" align="end" forceMount>
+          <DropdownMenuLabel className="font-normal">
+            <div className="flex flex-col space-y-1">
+              <p className="text-sm font-medium leading-none">{user?.fullName}</p>
+              <p className="text-xs leading-none text-muted-foreground">{user?.primaryEmailAddress?.emailAddress}</p>
+            </div>
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem>
+            <User className="mr-2 h-4 w-4" />
+            <span>Profile</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <LayoutDashboard className="mr-2 h-4 w-4" />
+            <span>Dashboard</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <Settings className="mr-2 h-4 w-4" />
+            <span>Settings</span>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem>
+            <LogOut className="mr-2 h-4 w-4" />
+              <SignOutButton redirectUrl="/events"/>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  };
+
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
@@ -171,10 +251,18 @@ const EventsPage: React.FC = () => {
         className="w-64 border-r p-4 overflow-y-auto"
         style={{ height: "calc(100vh - 16px)" }}
       >
-        <div className='logo flex items-center justify-center'>
-          <span className=' border-[1px] rounded-md border-purple-500 p-1 bg-purple-200'>
-            <span className='font-light text-sm'>Atomi</span>
-            <span className='font-bold text-sm'>City</span>
+        <div className='logo flex items-center justify-between'>
+          <Link href={"/"}>
+            <span className=' border-[1px] rounded-md border-purple-500 p-1 bg-purple-200'>
+              <span className='font-light text-sm'>Atomi</span>
+              <span className='font-bold text-sm'>City</span>
+            </span>
+          </Link>
+          <span className="flex items-center underline">
+            {/* <UserButton/> */}
+            {/* {User_from_Clerk?.user?.fullName} */}
+            <UserMenu/>
+
           </span>
         </div>
         <hr className=" my-2"/>

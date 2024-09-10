@@ -55,8 +55,12 @@ const Navbar = () => {
 
       <div className="auth-btns flex gap-x-3">
         <SignedOut>
-          <SignInButton />
-          <SignUpButton />
+          <Button>
+            <SignInButton mode="modal"/>
+          </Button>
+          <Button variant="outline">
+            <SignUpButton mode="modal"/>
+          </Button>
         </SignedOut>
         <SignedIn>
           <UserButton />
