@@ -58,10 +58,10 @@ const Navbar = () => {
 
         <SignedOut>
           <Button>
-            <SignInButton mode="modal" />
+            <SignInButton mode="modal" fallbackRedirectUrl={'/events'}/>
           </Button>
           <Button variant="outline">
-            <SignUpButton mode="modal" />
+            <SignUpButton mode="modal" fallbackRedirectUrl={'/settings/user/complete-signin'}/>
           </Button>
         </SignedOut>
         <SignedIn>
