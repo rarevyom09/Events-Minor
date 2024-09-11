@@ -8,6 +8,14 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
   CalendarIcon,
   MapPinIcon,
   ClockIcon,
@@ -22,9 +30,20 @@ import {
   BarChart2,
   Search,
   Home,
+  LayoutDashboard,
+  Settings,
+  LogOut,
+  LogIn,
+  CheckIcon,
+  ChevronsUpDown,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { cn } from "@/lib/utils";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface Event {
   _id: string;
@@ -43,16 +62,24 @@ interface Event {
 }
 
 const clubCategories = [
-  "Popular",
-  "Technical",
-  "Cultural",
-  "Sports",
-  "Academic",
-  "Social",
-  "Professional",
+  { value: "popular", label: "Popular" },
+  { value: "technical", label: "Technical" },
+  { value: "cultural", label: "Cultural" },
+  { value: "sports", label: "Sports" },
+  { value: "academic", label: "Academic" },
+  { value: "social", label: "Social" },
+  { value: "professional", label: "Professional" },
 ];
 
-const EventCard: React.FC<{ event: Event }> = ({ event }) => {
+const institutes = [
+  { value: "itnu", label: "ITNU" },
+  { value: "imnu", label: "IMNU" },
+  { value: "ipnu", label: "IPNU" },
+  { value: "ips", label: "IPS" },
+  { value: "ild", label: "ILD" },
+];
+
+const EventCard: React.FC<{ event: Event }> = ({ event }): JSX.Element => {
   return (
     <Card className="overflow-hidden">
       <CardContent className="p-0 relative">
@@ -125,8 +152,11 @@ const EventsPage: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string>("Popular");
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedInstitutes, setSelectedInstitutes] = useState<string[]>([]);
+  const { isSignedIn, user } = useUser();
+  const [isDropdownOpen, setDropdownOpen] = useState(false);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -151,8 +181,81 @@ const EventsPage: React.FC = () => {
 
   const filteredEvents = events.filter(
     (event) =>
-      event.title.toLowerCase().includes(searchTerm.toLowerCase())
+      event.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      (selectedCategories.length === 0 || selectedCategories.includes(event.eventType)) &&
+      (selectedInstitutes.length === 0 || selectedInstitutes.includes(event.clubName))
   );
+
+  const handleCategoryChange = (value: string) => {
+    setSelectedCategories(prev =>
+      prev.includes(value)
+        ? prev.filter(item => item !== value)
+        : [...prev, value]
+    );
+  };
+
+  const handleInstituteChange = (value: string) => {
+    setSelectedInstitutes(prev =>
+      prev.includes(value)
+        ? prev.filter(item => item !== value)
+        : [...prev, value]
+    );
+  };
+
+  const UserMenu = () => {
+    if (!isSignedIn) {
+      return (
+        <SignInButton mode="modal" fallbackRedirectUrl={"/events"}>
+          <Button variant="ghost" className="text-purple-500">
+            <LogIn className="mr-2 h-4 w-4" />
+            Sign In
+          </Button>
+        </SignInButton>
+      );
+    }
+
+
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="h-8 w-8 rounded-full">
+            <Avatar className="h-8 w-8">
+              <AvatarImage src={user?.imageUrl} alt={user?.fullName || ''} />
+              <AvatarFallback>{user?.firstName?.charAt(0) || ''}</AvatarFallback>
+            </Avatar>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56" align="end" forceMount>
+          <DropdownMenuLabel className="font-normal">
+            <div className="flex flex-col space-y-1">
+              <p className="text-sm font-medium leading-none">{user?.fullName}</p>
+              <p className="text-xs leading-none text-muted-foreground">{user?.primaryEmailAddress?.emailAddress}</p>
+            </div>
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem>
+            <User className="mr-2 h-4 w-4" />
+            <span>Profile</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <LayoutDashboard className="mr-2 h-4 w-4" />
+            <span>Dashboard</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <Settings className="mr-2 h-4 w-4" />
+            <Link href={'/settings/user'}>
+              <span>Settings</span>
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem>
+            <LogOut className="mr-2 h-4 w-4" />
+            <SignOutButton redirectUrl="/events">Sign out</SignOutButton>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  };
 
   if (loading) {
     return <div className="flex justify-center items-center h-screen">Loading...</div>;
@@ -171,13 +274,18 @@ const EventsPage: React.FC = () => {
         className="w-64 border-r p-4 overflow-y-auto"
         style={{ height: "calc(100vh - 16px)" }}
       >
-        <div className='logo flex items-center justify-center'>
-          <span className=' border-[1px] rounded-md border-purple-500 p-1 bg-purple-200'>
-            <span className='font-light text-sm'>Atomi</span>
-            <span className='font-bold text-sm'>City</span>
+        <div className='logo flex items-center justify-between'>
+          <Link href={"/"}>
+            <span className='border-[1px] rounded-md border-purple-500 p-1 bg-purple-200'>
+              <span className='font-light text-sm'>Atomi</span>
+              <span className='font-bold text-sm'>City</span>
+            </span>
+          </Link>
+          <span className="flex items-center underline">
+            <UserMenu />
           </span>
         </div>
-        <hr className=" my-2"/>
+        <hr className="my-2"/>
         <div className="space-y-4">
           <div>
             <h3 className="font-medium mb-2">Discover</h3>
@@ -220,21 +328,52 @@ const EventsPage: React.FC = () => {
             </ul>
           </div>
           <div>
-            <h3 className="font-medium mb-2">Categories</h3>
-            <ul className="space-y-2">
+          <h3 className="font-medium mb-2">Categories</h3>
+          <DropdownMenu open={isDropdownOpen} onOpenChange={setDropdownOpen}>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="w-full justify-between" onClick={() => setDropdownOpen(!isDropdownOpen)}>
+                Categories
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56">
               {clubCategories.map((category) => (
-                <li key={category}>
-                  <Button
-                    variant={selectedCategory === category ? "default" : "ghost"}
-                    className="w-full justify-start"
-                    onClick={() => setSelectedCategory(category)}
-                  >
-                    {category}
-                  </Button>
-                </li>
+                <DropdownMenuItem key={category.value} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`category-${category.value}`}
+                    checked={selectedCategories.includes(category.value)}
+                    onCheckedChange={() => handleCategoryChange(category.value)}
+                  />
+                  <label htmlFor={`category-${category.value}`}>{category.label}</label>
+                </DropdownMenuItem>
               ))}
-            </ul>
-          </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        
+        <div className="mt-4">
+          <h3 className="font-medium mb-2">Institute</h3>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="w-full justify-between">
+                Institutes
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56">
+              {institutes.map((institute) => (
+                <DropdownMenuItem key={institute.value} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`institute-${institute.value}`}
+                    checked={selectedInstitutes.includes(institute.value)}
+                    onCheckedChange={() => handleInstituteChange(institute.value)}
+                  />
+                  <label htmlFor={`institute-${institute.value}`}>{institute.label}</label>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
         </div>
       </div>
 
@@ -274,10 +413,10 @@ const EventsPage: React.FC = () => {
           </div>
         </div>
 
-        <div className=" flex ml-5 text-3xl font-semibold">
-          {selectedCategory}
+        <div className="flex ml-5 text-3xl font-semibold">
+          {selectedCategories}
         </div>
-        <ScrollArea className="flex px-4 space-y-2 pb-6">
+        <ScrollArea className="flex-1 px-4 pb-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredEvents.map((event) => (
               <EventCard key={event._id} event={event} />
