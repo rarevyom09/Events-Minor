@@ -205,7 +205,7 @@ const EventPage: React.FC = () => {
 
     try {
       const userID = user.id;
-      const url = `http://localhost:3000/api/event/register/${eventId}`;
+      const url = `/api/event/register/${eventId}`;
 
       const requestBody = {
         eventId: eventId,
