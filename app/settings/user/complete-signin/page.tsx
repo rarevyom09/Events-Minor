@@ -106,7 +106,7 @@ const CompleteSignIn = () => {
     e.preventDefault();
     console.log("User Data:", formData);
     try {
-      const url = `http://localhost:3000/api/user`;
+      const url = `/api/user`;
 
       const response = await fetch(url, {
         method: "POST",
