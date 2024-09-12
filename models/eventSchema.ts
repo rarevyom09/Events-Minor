@@ -14,6 +14,7 @@ interface IEvent extends Document {
   supportFile: string;
   visibility: boolean;
   isAvailableToReg: boolean;
+  registeredUsers: string[]; 
   owner: mongoose.Types.ObjectId;
 }
 
@@ -31,6 +32,7 @@ const eventSchema: Schema<IEvent> = new Schema({
   supportFile: { type: String, required: true },
   visibility: { type: Boolean, required: true },
   isAvailableToReg: { type: Boolean, required: true },
+  registeredUsers: [{ type: String}],
   owner: { type: Schema.Types.ObjectId, ref: 'Admin', required: true },
 });
 

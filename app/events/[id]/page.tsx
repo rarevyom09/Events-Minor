@@ -52,11 +52,11 @@ import { toast } from "@/hooks/use-toast";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { notFound } from "next/navigation"; // Import for handling not found pages
-import { useUser } from '@clerk/clerk-react'
-
+import { useUser } from "@clerk/clerk-react";
+import { Router } from "next/router";
 
 interface Event {
-    [key: string]: any;
+  [key: string]: any;
   _id: string;
   title: string;
   subtitle: string;
@@ -81,7 +81,7 @@ const event: Event = {
   subtitle: "Garba Night",
   description:
     "Join us for a night of traditional Garba dancing and festivities!",
-  date: "2024-09-15T00:00:00.000Z",
+  date: "2024-15-09T00:00:00.000Z",
   location: "Dome Ground, Nirma University, Ahmedabad",
   time: "7:00 PM Onwards",
   fees: 200,
@@ -170,9 +170,9 @@ const ShareCard: React.FC<{ event: Event }> = ({ event }) => {
 const EventPage: React.FC = () => {
   const [showTicketBanner, setShowTicketBanner] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [registerStatus, setRegisterStatus] = useState("Register Now");
   const coverImageRef = useRef<HTMLDivElement>(null);
-  const { isSignedIn, user, isLoaded } = useUser()
-
+  const { isSignedIn, user, isLoaded } = useUser();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -208,9 +208,10 @@ const EventPage: React.FC = () => {
       const url = `http://localhost:3000/api/event/register/${eventId}`;
 
       const requestBody = {
-        eventID: eventId,
-        userID: userID,
+        eventId: eventId,
+        userId: userID,
       };
+      // console.log("from frontend: ",requestBody);
 
       const response = await fetch(url, {
         method: "POST",
@@ -223,6 +224,8 @@ const EventPage: React.FC = () => {
       const data = await response.json();
       if (response.status) {
         console.log("Registration successful:", data);
+        //toaster to reg succ
+        // router.push("/");
       } else {
         console.error("Registration failed:");
       }
@@ -242,6 +245,7 @@ const EventPage: React.FC = () => {
   useEffect(() => {
     const fetchEventData = async () => {
       try {
+        const userID = user?.id;
         const response = await fetch(`/api/event/${eventId}`);
         const data = await response.json();
         console.log("Data: ", data.data[0]);
@@ -252,6 +256,11 @@ const EventPage: React.FC = () => {
           Object.keys(fetchedEventData).forEach((key) => {
             event[key] = fetchedEventData[key];
           });
+          console.log("fetchEventData: ", fetchedEventData);
+          console.log(fetchedEventData["registeredUsers"].includes(userID));
+          if (fetchedEventData["registeredUsers"].includes(userID)) {
+            setRegisterStatus("Already Registered");
+          }
         } else {
           setError("Failed to load events");
         }
@@ -290,9 +299,7 @@ const EventPage: React.FC = () => {
               className="rounded-full"
             />
             <div>
-              <h2 className="text-lg font-semibold">
-                {event.title}
-              </h2>
+              <h2 className="text-lg font-semibold">{event.title}</h2>
               <div className="flex items-center text-sm text-gray-600">
                 <CalendarIcon className="h-4 w-4 mr-1" />
                 <span>{new Date(event.date).toLocaleDateString()}</span>
@@ -479,10 +486,11 @@ const EventPage: React.FC = () => {
                   <span className="font-bold">₹{event.fees}</span>
                 </div>
                 <Button
-                  className="w-full bg-purple-500 hover:bg-purple-700"
+                  className={`w-full bg-purple-500 hover:bg-purple-700`}
                   onClick={handleRegister}
+                  // disabled={registerStatus === "Already Registered"}
                 >
-                  Register Now
+                  {registerStatus}
                 </Button>
                 <div className="text-center text-sm text-gray-500">
                   {event.noOfParticipants} people are attending

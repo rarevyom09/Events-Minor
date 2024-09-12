@@ -9,10 +9,10 @@ interface IUser extends Document {
     mobileNo: string;
     institute: string;
     interestedCategories: string[];
-    registeredEvents: mongoose.Types.ObjectId[];
-    pastEvents: mongoose.Types.ObjectId[];
+    registeredEvents: String[];
+    pastEvents: String[];
     certificates: string[];
-    memberOfClubs: mongoose.Types.ObjectId[];
+    memberOfClubs: String[];
 }
 
 const userSchema: Schema<IUser> = new Schema<IUser>({
@@ -23,10 +23,10 @@ const userSchema: Schema<IUser> = new Schema<IUser>({
     mobileNo: { type: String, required: true },
     institute: { type: String, required: true },
     interestedCategories: { type: [String], required: true },
-    registeredEvents: { type: [Schema.Types.ObjectId], ref: 'Event' },
-    pastEvents: { type: [Schema.Types.ObjectId], ref: 'Event' },
+    registeredEvents: { type: [String], ref: 'Event' },
+    pastEvents: { type: [String], ref: 'Event' },
     certificates: { type: [String] },
-    memberOfClubs: { type: [Schema.Types.ObjectId], ref: 'Club' }
+    memberOfClubs: { type: [String], ref: 'Club' }
 });
 
 const User = mongoose.models.User || mongoose.model<IUser>('User', userSchema);

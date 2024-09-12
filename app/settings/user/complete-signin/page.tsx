@@ -1,54 +1,133 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useUser } from '@clerk/nextjs'; // Fetch Clerk user details
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useUser } from "@clerk/nextjs"; // Fetch Clerk user details
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { MoveRight } from 'lucide-react';
+import { MoveRight } from "lucide-react";
+import Event from "@/models/eventSchema";
+import Admin from "@/models/adminSchema";
+
+const clubCategories = [
+  { value: "popular", label: "Popular" },
+  { value: "technical", label: "Technical" },
+  { value: "cultural", label: "Cultural" },
+  { value: "sports", label: "Sports" },
+  { value: "academic", label: "Academic" },
+  { value: "social", label: "Social" },
+  { value: "professional", label: "Professional" },
+];
+
+interface IUser {
+  name: string;
+  email: string;
+  username: string;
+  clerkId: string;
+  mobileNo: string;
+  institute: string;
+  interestedCategories: string[];
+  certificates: string[];
+  registeredEvents: (typeof Event)[];
+  pastEvents: (typeof Event)[];
+  memberOfClubs: (typeof Admin)[];
+}
 
 const CompleteSignIn = () => {
   const { user } = useUser();
   const router = useRouter();
 
   // State to store form details
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    username: '',
-    mobileNo: '',
+  const [formData, setFormData] = useState<IUser>({
+    name: "",
+    email: "",
+    username: "",
+    clerkId: "",
+    mobileNo: "",
+    institute: "",
+    interestedCategories: [],
+    certificates: [],
+    registeredEvents: [],
+    pastEvents: [],
+    memberOfClubs: [],
   });
 
   // UseEffect to update formData once the user data is available
   useEffect(() => {
     if (user) {
       setFormData({
-        name: user?.fullName || '',
-        email: user?.emailAddresses[0]?.emailAddress || '',
-        username: user?.username || '',
-        mobileNo: '',
+        name: "",
+        email: user?.emailAddresses[0]?.emailAddress || "",
+        username: user?.username || "",
+        clerkId: user?.id || "",
+        mobileNo: "",
+        institute: "",
+        interestedCategories: [],
+        certificates: [],
+        registeredEvents: [],
+        pastEvents: [],
+        memberOfClubs: [],
       });
     }
   }, [user]);
 
   // Handle form change
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
   };
 
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (e.target.checked) {
+      setFormData({
+        ...formData,
+        interestedCategories: [...formData.interestedCategories, value],
+      });
+    } else {
+      setFormData({
+        ...formData,
+        interestedCategories: formData.interestedCategories.filter(
+          (category) => category !== value
+        ),
+      });
+    }
+  };
+
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('User Data:', formData);
+    console.log("User Data:", formData);
+    try {
+      const url = `http://localhost:3000/api/user`;
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+      if (response.status) {
+        console.log("Registration successful:", data);
+      } else {
+        console.error("Registration failed:");
+      }
+    } catch (error) {
+      console.error("An error occurred during registration dp :", error);
+    }
 
     // Redirect to events page after submission
-    router.push('/events');
+    router.push("/events");
   };
 
   return (
@@ -58,20 +137,20 @@ const CompleteSignIn = () => {
         <div className="mx-auto grid w-[350px] gap-6">
           <div className="grid gap-2 text-center">
             <h1 className="text-3xl font-bold">Complete Sign In</h1>
-            <p className="text-muted-foreground">Fill in the details to proceed.</p>
+            <p className="text-muted-foreground">
+              Fill in the details to proceed.
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="grid gap-4">
             {/* Name Field */}
             <div className="grid gap-1">
-              <Label htmlFor="name">Name</Label>
+              <Label htmlFor="name">Full Name</Label>
               <Input
-                disabled
                 id="name"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                readOnly
                 className="mt-1 block w-full"
               />
             </div>
@@ -80,7 +159,6 @@ const CompleteSignIn = () => {
             <div className="grid gap-1">
               <Label htmlFor="email">Email</Label>
               <Input
-                disabled
                 id="email"
                 name="email"
                 value={formData.email}
@@ -94,7 +172,6 @@ const CompleteSignIn = () => {
             <div className="grid gap-1">
               <Label htmlFor="username">Username</Label>
               <Input
-                disabled
                 id="username"
                 name="username"
                 value={formData.username}
@@ -117,24 +194,58 @@ const CompleteSignIn = () => {
               />
             </div>
 
+            {/* Institute Select Field */}
+            <div className="grid gap-1">
+              <Label htmlFor="institute">Institute</Label>
+              <select
+                id="institute"
+                name="institute"
+                value={formData.institute}
+                onChange={handleChange}
+                className="mt-1 block w-full"
+              >
+                <option value="itnu">ITNU</option>
+                <option value="imnu">IMNU</option>
+                <option value="ipnu">IPNU</option>
+                <option value="ianu">IANU</option>
+              </select>
+            </div>
+
+            {/* Interested Categories (Checkboxes) */}
+            <div className="grid gap-1">
+              <Label>Interested Categories</Label>
+              {clubCategories.map((category) => (
+                <div key={category.value} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id={category.value}
+                    name="interestedCategories"
+                    value={category.value}
+                    checked={formData.interestedCategories.includes(
+                      category.value
+                    )}
+                    onChange={handleCategoryChange}
+                    className="mr-2"
+                  />
+                  <label htmlFor={category.value}>{category.label}</label>
+                </div>
+              ))}
+            </div>
+
             {/* Proceed Button */}
             <Button type="submit" className="flex w-full mt-3 items-center">
-                Proceed
-                    <MoveRight className='ml-2'/>
+              Proceed
+              <MoveRight className="ml-2" />
             </Button>
           </form>
-
-          {/* <div className="mt-4 text-center text-sm">
-            Already have an account?{" "}
-            <Link href="/login" className="underline">Login</Link>
-          </div> */}
         </div>
       </div>
 
       {/* Right Column with the Image */}
       <div className="hidden bg-muted lg:block">
-        
-        <span className='absolute text-white font-light text-9xl top-[40%] ml-5'>Atomi<span className=' font-bold'>City</span></span>
+        <span className="absolute text-white font-light text-9xl top-[40%] ml-5">
+          Atomi<span className=" font-bold">City</span>
+        </span>
         <Image
           src="/imgs/img5.jpg" // Path to your image
           alt="Cover Image"
