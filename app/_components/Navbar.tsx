@@ -8,6 +8,8 @@ import {
   SignedIn,
   SignedOut,
   UserButton,
+  ClerkLoaded,
+  ClerkLoading
 } from "@clerk/nextjs";
 
 const Navbar = () => {
@@ -55,6 +57,7 @@ const Navbar = () => {
 
       <div className="auth-btns flex gap-x-3">
 
+      <ClerkLoaded>
 
         <SignedOut>
           <Button>
@@ -67,7 +70,15 @@ const Navbar = () => {
         <SignedIn>
           <UserButton />
         </SignedIn>
-
+      </ClerkLoaded>
+      <ClerkLoading>
+        <Button disabled>
+          Sign in
+        </Button>
+        <Button variant="outline" disabled>
+          Sign up
+        </Button>
+      </ClerkLoading>
 
         
         {/* <Link href={'/sign-in'}>

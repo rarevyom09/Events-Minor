@@ -44,6 +44,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Event {
   _id: string;
@@ -148,6 +149,31 @@ const EventCard: React.FC<{ event: Event }> = ({ event }): JSX.Element => {
   );
 };
 
+const LoadingSkeleton = () => (
+  <Card className="overflow-hidden">
+    <CardContent className="p-0">
+      <Skeleton className="w-full h-48" />
+      <div className="p-4">
+        <Skeleton className="h-6 w-3/4 mb-2" />
+        <Skeleton className="h-4 w-1/2 mb-4" />
+        <div className="flex justify-between items-center mb-4">
+          <Skeleton className="h-10 w-10 rounded-full" />
+          <Skeleton className="h-4 w-1/4" />
+        </div>
+        <div className="flex justify-between items-center">
+          <div className="space-x-2">
+            <Skeleton className="h-4 w-16 inline-block" />
+            <Skeleton className="h-4 w-16 inline-block" />
+          </div>
+          <Skeleton className="h-8 w-24" />
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+);
+
+
+// main component
 const EventsPage: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -258,7 +284,34 @@ const EventsPage: React.FC = () => {
   };
 
   if (loading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+    return (
+      <div className="flex h-screen bg-background">
+        {/* Sidebar skeleton */}
+        <div className="w-64 border-r p-4">
+          <Skeleton className="h-8 w-32 mb-4" />
+          <Skeleton className="h-4 w-full mb-2" />
+          <Skeleton className="h-4 w-3/4 mb-2" />
+          <Skeleton className="h-4 w-1/2 mb-4" />
+          {/* Repeat for other sidebar items */}
+        </div>
+        
+        {/* Main content skeleton */}
+        <div className="flex-1 p-6">
+          <div className="flex justify-between items-center mb-6">
+            <Skeleton className="h-10 w-64" />
+            <div className="flex space-x-2">
+              <Skeleton className="h-10 w-40" />
+              <Skeleton className="h-10 w-40" />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[...Array(6)].map((_, index) => (
+              <LoadingSkeleton key={index} />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (error) {
@@ -328,52 +381,52 @@ const EventsPage: React.FC = () => {
             </ul>
           </div>
           <div>
-          <h3 className="font-medium mb-2">Categories</h3>
-          <DropdownMenu open={isDropdownOpen} onOpenChange={setDropdownOpen}>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="w-full justify-between" onClick={() => setDropdownOpen(!isDropdownOpen)}>
-                Categories
-                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56">
-              {clubCategories.map((category) => (
-                <DropdownMenuItem key={category.value} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`category-${category.value}`}
-                    checked={selectedCategories.includes(category.value)}
-                    onCheckedChange={() => handleCategoryChange(category.value)}
-                  />
-                  <label htmlFor={`category-${category.value}`}>{category.label}</label>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+            <h3 className="font-medium mb-2">Categories</h3>
+            <DropdownMenu open={isDropdownOpen} onOpenChange={setDropdownOpen}>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="w-full justify-between" onClick={() => setDropdownOpen(!isDropdownOpen)}>
+                  Categories
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56">
+                {clubCategories.map((category) => (
+                  <DropdownMenuItem key={category.value} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`category-${category.value}`}
+                      checked={selectedCategories.includes(category.value)}
+                      onCheckedChange={() => handleCategoryChange(category.value)}
+                    />
+                    <label htmlFor={`category-${category.value}`}>{category.label}</label>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         
-        <div className="mt-4">
-          <h3 className="font-medium mb-2">Institute</h3>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="w-full justify-between">
-                Institutes
-                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56">
-              {institutes.map((institute) => (
-                <DropdownMenuItem key={institute.value} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`institute-${institute.value}`}
-                    checked={selectedInstitutes.includes(institute.value)}
-                    onCheckedChange={() => handleInstituteChange(institute.value)}
-                  />
-                  <label htmlFor={`institute-${institute.value}`}>{institute.label}</label>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+          <div className="mt-4">
+            <h3 className="font-medium mb-2">Institute</h3>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="w-full justify-between">
+                  Institutes
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56">
+                {institutes.map((institute) => (
+                  <DropdownMenuItem key={institute.value} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`institute-${institute.value}`}
+                      checked={selectedInstitutes.includes(institute.value)}
+                      onCheckedChange={() => handleInstituteChange(institute.value)}
+                    />
+                    <label htmlFor={`institute-${institute.value}`}>{institute.label}</label>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
 

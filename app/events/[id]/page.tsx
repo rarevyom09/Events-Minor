@@ -47,13 +47,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Toast } from "@/components/ui/toast";
-import { toast } from "@/hooks/use-toast";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { notFound } from "next/navigation"; // Import for handling not found pages
 import { useUser } from "@clerk/clerk-react";
-import { Router } from "next/router";
+import {toast} from "sonner";
+import EventPageSkeleton from "./EventPageSkeleton";
 
 interface Event {
   [key: string]: any;
@@ -109,10 +108,7 @@ const ShareCard: React.FC<{ event: Event }> = ({ event }) => {
   const copyToClipboard = () => {
     navigator.clipboard.writeText(eventUrl).then(() => {
       setCopied(true);
-      toast({
-        title: "URL Copied",
-        description: "Event link has been copied to clipboard.",
-      });
+      toast.success("Event link has been copied to clipboard.");
       setTimeout(() => setCopied(false), 2000);
     });
   };
@@ -174,6 +170,7 @@ const EventPage: React.FC = () => {
   const coverImageRef = useRef<HTMLDivElement>(null);
   const { isSignedIn, user, isLoaded } = useUser();
 
+  const router=useRouter();
   useEffect(() => {
     const handleScroll = () => {
       if (coverImageRef.current) {
@@ -199,6 +196,7 @@ const EventPage: React.FC = () => {
     // Register event logic here
     if (!user) {
       console.log("Please log in first to register for the event.");
+      toast.warning("Please log in first to register for the event.");
       //add toaster functionlity here or show message to log in
       return;
     }
@@ -224,13 +222,15 @@ const EventPage: React.FC = () => {
       const data = await response.json();
       if (response.status) {
         console.log("Registration successful:", data);
-        //toaster to reg succ
-        // router.push("/");
+        toast.success("Registration successful");
+
+        router.push("/events");
       } else {
         console.error("Registration failed:");
       }
     } catch (error) {
       console.error("An error occurred during registration:", error);
+      toast.error("Unexpected error caused, retry again");
     }
   };
 
@@ -275,6 +275,15 @@ const EventPage: React.FC = () => {
   }, []);
 
   return (
+
+    <>
+    {loading ? (
+      <EventPageSkeleton />
+    ) : error ? (
+      <div className="container mx-auto px-4 py-8 text-center">
+        <h1 className="text-2xl font-bold text-red-600">{error}</h1>
+      </div>
+    ) : (
     <div className="container mx-auto px-4 py-8">
       {/* Sticky Ticket Banner */}
       <div
@@ -310,15 +319,23 @@ const EventPage: React.FC = () => {
             <Button variant="outline" size="sm" className="flex items-center">
               <StarIcon className="h-4 w-4 mr-1" />I am Interested
             </Button>
-            <Button variant="outline" size="sm" className="flex items-center">
-              <ShareIcon className="h-4 w-4 mr-1" />
-              Share
-            </Button>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="flex-1">
+                  <ShareIcon className="h-5 w-5 mr-2" />
+                  Share
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <ShareCard event={event} />
+              </PopoverContent>
+            </Popover>
             <Button
-              className="bg-black hover:bg-purple-800 text-white"
+              className={`w-full ${registerStatus === "Already Registered" ? "bg-gray-500 cursor-not-allowed hover:cursor-crosshair" : "bg-purple-500 hover:bg-purple-700"}`}
               onClick={handleRegister}
+              disabled={registerStatus === "Already Registered"}
             >
-              Register Now
+              {registerStatus}
             </Button>
           </div>
         </div>
@@ -486,12 +503,13 @@ const EventPage: React.FC = () => {
                   <span className="font-bold">₹{event.fees}</span>
                 </div>
                 <Button
-                  className={`w-full bg-purple-500 hover:bg-purple-700`}
+                  className={`w-full ${registerStatus === "Already Registered" ? "bg-gray-400 cursor-not-allowed hover:cursor-crosshair" : "bg-purple-500 hover:bg-purple-700"}`}
                   onClick={handleRegister}
-                  // disabled={registerStatus === "Already Registered"}
+                  disabled={registerStatus === "Already Registered"}
                 >
                   {registerStatus}
                 </Button>
+
                 <div className="text-center text-sm text-gray-500">
                   {event.noOfParticipants} people are attending
                 </div>
@@ -584,7 +602,7 @@ const EventPage: React.FC = () => {
                       height={200}
                       width={250}
                       alt="cover img"
-                      className="rounded-lg"
+                      className="rounded-lg max-h-[160px]"
                     />
                   </div>
                   <div className="text-justify">
@@ -613,7 +631,8 @@ const EventPage: React.FC = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )}
+  </>
+)};
 
 export default EventPage;
