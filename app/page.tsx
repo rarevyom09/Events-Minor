@@ -1,5 +1,6 @@
 // import Image from "next/image";
 
+import AdditionalFeatures from "./_components/AdditionalFeatures";
 import EventList from "./_components/EventList";
 import Hero from "./_components/Hero";
 import Navbar from "./_components/Navbar";
@@ -10,7 +11,8 @@ export default function Home() {
     <div className="main-home-page">
       <Navbar/>
       <Hero/>
-      <EventList/>
+      <AdditionalFeatures/>
+      {/* <EventList/> */}
       <TestimonialSection/>
     </div>
   );

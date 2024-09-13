@@ -1,6 +1,18 @@
-import React from "react";
-import { Button } from "@/components/ui/button";
+"use client"
+
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu";
 import {
   ClerkProvider,
   SignInButton,
@@ -9,96 +21,95 @@ import {
   SignedOut,
   UserButton,
   ClerkLoaded,
-  ClerkLoading
+  ClerkLoading,
 } from "@clerk/nextjs";
 
 const Navbar = () => {
+  const [isFloating, setIsFloating] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const heroSection = document.getElementById('home');
+      if (heroSection) {
+        const heroHeight = heroSection.offsetHeight;
+        const scrollPosition = window.scrollY;
+        setIsFloating(scrollPosition > heroHeight);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <div className=" flex p-2 justify-between bg-purple-200 items-center">
-      <div className="logo">
-        <span className=" border-[1px] rounded-md border-purple-500 p-1 bg-purple-200">
-          <span className="font-light text-lg">Atomi</span>
-          <span className="font-bold text-lg">City</span>
-        </span>
-      </div>
+    <Card className={`w-full border-b-transparent transition-all duration-300 ${
+      isFloating ? "fixed top-0 left-0 right-0 z-50 shadow-md bg-opacity-90 backdrop-blur-sm" : ""
+    }`}>
+      <CardContent className="flex justify-between items-center p-4">
+        <div className="logo">
+          <span className="text-2xl font-light">
+            Atomi<span className="font-bold">City</span>
+          </span>
+        </div>
 
-      <div className="menu-item">
-        <nav className="hidden md:flex items-center space-x-4">
-          <Link
-            href="#"
-            className="hover:border-b-2 hover:border-purple-500"
-            prefetch={false}
-          >
-            Events
-          </Link>
-          <Link
-            href="#"
-            className="hover:border-b-2 hover:border-purple-500"
-            prefetch={false}
-          >
-            Pricing
-          </Link>
-          <Link
-            href="#"
-            className="hover:border-b-2 hover:border-purple-500"
-            prefetch={false}
-          >
-            About
-          </Link>
-          <Link
-            href="#"
-            className="hover:border-b-2 hover:border-purple-500"
-            prefetch={false}
-          >
-            Contact
-          </Link>
-        </nav>
-      </div>
+        <NavigationMenu className="hidden md:flex">
+          <NavigationMenuList>
+            <NavigationMenuItem>
+              <Link href="#" legacyBehavior passHref>
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  Events
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <Link href="#" legacyBehavior passHref>
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  Pricing
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <Link href="#" legacyBehavior passHref>
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  About
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <Link href="#" legacyBehavior passHref>
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  Contact
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+          </NavigationMenuList>
+        </NavigationMenu>
 
-      <div className="auth-btns flex gap-x-3">
-
-      <ClerkLoaded>
-
-        <SignedOut>
-          <Button>
-            <SignInButton mode="modal" fallbackRedirectUrl={'/events'}/>
-          </Button>
-          <Button variant="outline">
-            <SignUpButton mode="modal" fallbackRedirectUrl={'/settings/user/complete-signin'}/>
-          </Button>
-        </SignedOut>
-        <SignedIn>
-          <UserButton />
-        </SignedIn>
-      </ClerkLoaded>
-      <ClerkLoading>
-        <Button disabled>
-          Sign in
-        </Button>
-        <Button variant="outline" disabled>
-          Sign up
-        </Button>
-      </ClerkLoading>
-
-        
-        {/* <Link href={'/sign-in'}>
-          <button
-            className='block w-full border border-black rounded-lg px-3 py-2 text-sm font-medium transition focus:outline-none hover:border-purple-500 hover:text-purple-800'
-            type='button'
-          >
-            SignIn
-          </button>
-        </Link>
-        <Link href={"/sign-up"}>
-          <button
-            className='w-full bg-black border rounded-lg px-3 py-2 text-sm text-white font-medium transition focus:outline-none hover:bg-purple-500 hover:text-black hover:border-purple-500'
-            type='button'
-          >
-            SignUp
-          </button>
-        </Link> */}
-      </div>
-    </div>
+        <div className="auth-btns flex gap-x-3">
+          <ClerkLoaded>
+            <SignedOut>
+              <Button variant="ghost" className="text-primary">
+                <SignInButton mode="modal" fallbackRedirectUrl={'/events'}/>
+              </Button>
+              <Button variant="default">
+                <SignUpButton mode="modal" fallbackRedirectUrl={'/settings/user/complete-signin'}/>
+              </Button>
+            </SignedOut>
+            <SignedIn>
+              <UserButton afterSignOutUrl="/" />
+            </SignedIn>
+          </ClerkLoaded>
+          <ClerkLoading>
+            <Button variant="ghost" disabled>
+              Sign in
+            </Button>
+            <Button variant="default" disabled>
+              Sign up
+            </Button>
+          </ClerkLoading>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
