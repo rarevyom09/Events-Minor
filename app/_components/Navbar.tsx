@@ -23,6 +23,7 @@ import {
   ClerkLoaded,
   ClerkLoading,
 } from "@clerk/nextjs";
+import Image from "next/image";
 
 const Navbar = () => {
   const [isFloating, setIsFloating] = useState(false);
@@ -50,6 +51,9 @@ const Navbar = () => {
           <span className="text-2xl font-light">
             Atomi<span className="font-bold">City</span>
           </span>
+          {/* <span className=" text-xs underline font-light ">
+            admin @ Atomi<span className="font-bold">City</span>
+          </span> */}
         </div>
 
         <NavigationMenu className="hidden md:flex">
@@ -82,6 +86,45 @@ const Navbar = () => {
                 </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
+            
+            <NavigationMenuItem>
+              <NavigationMenuTrigger>Admin</NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <div className="w-full p-6 lg:w-[500px] rounded-md shadow-lg bg-white">
+                  <div className="flex items-center justify-between space-x-4 p-4 bg-gradient-to-b from-muted/50 to-muted rounded-md">
+                    <div className="flex flex-col items-center text-center">
+                      <Image 
+                        src='/imgs/atomicity_logo.png'
+                        height={60}
+                        width={60}
+                        alt="logo"
+                        className="mb-3"
+                      />
+                      <div className="text-lg text-gray-800">
+                        Atomi<span className="font-bold">City</span>
+                        <span className="block italic font-light text-sm text-gray-500">
+                          @Admin
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex flex-col justify-center text-left">
+                      <p className="text-md leading-snug font-extralight text-gray-700">
+                        Join as an admin and shape the future of event management! Lead teams, manage events, and create impactful experiences.
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-center">
+                    <Link href='https://admin.atomicity.vercel.app/' className=" w-full" target="_blank">
+                      <Button className="w-full ">
+                        Apply for Admin
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+
           </NavigationMenuList>
         </NavigationMenu>
 
